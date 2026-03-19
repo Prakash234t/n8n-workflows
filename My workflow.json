@@ -1,0 +1,191 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "82bc2373-fa4a-4fbe-9162-63bbb0c23eb1",
+      "name": "When chat message received",
+      "webhookId": "859cacb6-7339-4535-b922-1a4807d13ecf"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are an intelligent appointment booking AI agent.\n\nResponsibilities:\n- Extract user intent\n- Ask only necessary questions\n- Handle rescheduling or cancellation if requested\n\nRequired fields:\n- Name\n- Contact info\n- Date & time\n- Reason\n\nBehavior:\n- Be polite and concise\n- Avoid unnecessary questions\n- Confirm before booking\n\nFinal Output Format:\nReason: <short user intent>\nAction: Appointment confirmed for <date & time>. Notification sent."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "fb2a6c3a-6f64-4978-8027-9998acf49cb2",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "id"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        80,
+        208
+      ],
+      "id": "d31b87f3-915a-49be-a6e7-78db0616afa6",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "tYf9SdKTmM5CUwTi",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        208
+      ],
+      "id": "123a9135-c836-415a-b468-c2fc811efcf1",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "c914209@gmail.com",
+          "mode": "list",
+          "cachedResultName": "c914209@gmail.com"
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        208
+      ],
+      "id": "b950a50c-684c-4c13-846a-6194b6fc0acb",
+      "name": "Create an event in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "GN0q4Yy46E9lLyIc",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "c914209@gmail.com",
+          "mode": "list",
+          "cachedResultName": "c914209@gmail.com"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        464,
+        224
+      ],
+      "id": "be16d8ed-efab-42a1-94b1-806267a6628a",
+      "name": "Get many events in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "GN0q4Yy46E9lLyIc",
+          "name": "Google Calendar account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many events in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "f0b31b23-2582-4dc8-96a2-0c9d66f73bbf",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fb08e72a7e3581a5aa3ca5b4853f5813a65a5404ce8399f454185bf321ca1b1a"
+  },
+  "id": "AwsWIANygHvuNCJ5",
+  "tags": []
+}
