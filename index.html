@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Meeting Assistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .chat-container {
+      width: 400px;
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-box {
+      height: 400px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      padding: 10px;
+      background: #020617;
+      border-radius: 8px;
+    }
+
+    .message {
+      margin: 8px 0;
+      padding: 8px 12px;
+      border-radius: 8px;
+      max-width: 80%;
+    }
+
+    .user {
+      background: #3b82f6;
+      align-self: flex-end;
+    }
+
+    .bot {
+      background: #22c55e;
+      align-self: flex-start;
+    }
+
+    .input-box {
+      display: flex;
+    }
+
+    input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      outline: none;
+    }
+
+    button {
+      margin-left: 8px;
+      padding: 10px;
+      border: none;
+      background: #6366f1;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="chat-container">
+  <h3>🤖 AI Meeting Assistant</h3>
+
+  <div class="chat-box" id="chatBox"></div>
+
+  <div class="input-box">
+    <input type="text" id="userInput" placeholder="Type message...">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+</div>
+
+<script>
+  const WEBHOOK_URL = "YOUR_N8N_WEBHOOK_URL";
+
+  const chatBox = document.getElementById("chatBox");
+
+  function addMessage(text, sender) {
+    const msg = document.createElement("div");
+    msg.classList.add("message", sender);
+    msg.innerText = text;
+    chatBox.appendChild(msg);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  async function sendMessage() {
+    const input = document.getElementById("userInput");
+    const message = input.value.trim();
+
+    if (!message) return;
+
+    addMessage(message, "user");
+    input.value = "";
+
+    try {
+      const response = await fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: message
+        })
+      });
+
+      const data = await response.json();
+
+      // adjust based on your n8n response format
+      const botReply = data.reply || data.output || "No response";
+
+      addMessage(botReply, "bot");
+
+    } catch (error) {
+      addMessage("Error connecting to server", "bot");
+    }
+  }
+</script>
+
+</body>
+</html>
